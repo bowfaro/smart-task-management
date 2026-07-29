@@ -35,4 +35,10 @@ export const MESSAGE = {
   SOFT_DELETE_FAIL: 'user.soft_delete_user_fail',
   HARD_DELETE_USER_SUCCESS: 'user.hard_delete_success',
   HARD_DELETE_USER_FAIL: 'user.hard_delete_fail',
+
+  //task
+  TASK_CREATED: 'task.task_created',
+  TASK_UPDATED: 'task.task_updated',
+  TASK_NOT_FOUND: 'task.task_not_found',
+  TASK_STATUS_UPDATED: 'task.task_status_updated',
 };

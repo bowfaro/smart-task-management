@@ -8,6 +8,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { TokenModule } from './modules/tokens/token.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { UserModule } from './modules/users/user.module';
+import dataSource from './common/config/ormconfig';
+import { TaskModule } from './modules/tasks/task.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -15,10 +17,11 @@ import { UserModule } from './modules/users/user.module';
       envFilePath: '.env',
       load: [configuration],
     }),
-    TypeOrmModule.forRoot(ormConfig),
+    TypeOrmModule.forRoot(dataSource.options),
     TokenModule,
     AuthModule,
     UserModule,
+    TaskModule,
   ],
   controllers: [AppController],
   providers: [AppService],

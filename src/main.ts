@@ -9,6 +9,7 @@ async function bootstrap() {
     .setDescription('The Smart Task API description')
     .setVersion('1.0')
     .addTag('Smart Task')
+    .addBearerAuth()
     .build();
 
   const documentFactory = () => SwaggerModule.createDocument(app, config);
