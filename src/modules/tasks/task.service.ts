@@ -6,7 +6,7 @@ import { CreateTaskDto } from './dto/create-task.dto';
 import { MessageResponse } from 'src/common/types/response';
 import { UserService } from '../users/user.service';
 import { MESSAGE } from 'src/common/constants/message';
-import { TaskResponse } from './types/task-res.type';
+import { TaskListResponse, TaskResponse } from './types/task-res.type';
 import { TaskStatus } from 'src/common/constants/enum';
 
 @Injectable()
@@ -17,8 +17,14 @@ export class TaskService {
     private readonly userService: UserService,
   ) {}
 
-  async getTasks(userId: string) {
-    return this.taskRepository.find({ where: { user_id: userId } });
+  async getTasks(userId: string): Promise<TaskListResponse> {
+    const tasks = await this.taskRepository.find({
+      where: { user_id: userId },
+    });
+    return {
+      items: tasks,
+      total: tasks.length,
+    };
   }
 
   async getTaskById(taskId: string): Promise<TaskResponse> {
