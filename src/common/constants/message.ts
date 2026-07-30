@@ -41,4 +41,10 @@ export const MESSAGE = {
   TASK_UPDATED: 'task.task_updated',
   TASK_NOT_FOUND: 'task.task_not_found',
   TASK_STATUS_UPDATED: 'task.task_status_updated',
+
+  //tag
+  TAG_CREATED: 'tag.tag_created',
+  TAG_UPDATED: 'tag.tag_updated',
+  TAG_NOT_FOUND: 'tag.tag_not_found',
+  TAG_DELETED: 'tag.tag_deleted',
 };

@@ -10,6 +10,7 @@ import { AuthModule } from './modules/auth/auth.module';
 import { UserModule } from './modules/users/user.module';
 import dataSource from './common/config/ormconfig';
 import { TaskModule } from './modules/tasks/task.module';
+import { TagModule } from './modules/tags/tag.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -22,6 +23,7 @@ import { TaskModule } from './modules/tasks/task.module';
     AuthModule,
     UserModule,
     TaskModule,
+    TagModule,
   ],
   controllers: [AppController],
   providers: [AppService],
