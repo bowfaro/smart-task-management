@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   Patch,
@@ -121,5 +122,23 @@ export class TaskController {
     @Body() statusDto: UpdateTaskStatusDto,
   ): Promise<MessageResponse> {
     return this.taskService.updateTaskStatus(taskId, statusDto.status);
+  }
+
+  @Delete(':id')
+  @ApiOperation({ summary: 'Xóa task' })
+  @ApiResponse({
+    status: 200,
+    description: 'Task được xóa thành công',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Không tìm thấy task',
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Không có quyền truy cập',
+  })
+  deleteTask(@Param('id') taskId: string): Promise<MessageResponse> {
+    return this.taskService.deleteTask(taskId);
   }
 }
