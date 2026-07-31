@@ -1,13 +1,14 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { TaskEntity } from 'src/database/entities/task.entity';
-import { Repository } from 'typeorm';
+import { ILike, Repository } from 'typeorm';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { MessageResponse } from 'src/common/types/response';
 import { UserService } from '../users/user.service';
 import { MESSAGE } from 'src/common/constants/message';
 import { TaskListResponse, TaskResponse } from './types/task-res.type';
 import { TaskStatus } from 'src/common/constants/enum';
+import { Pagination } from 'src/common/types/pagination';
 
 @Injectable()
 export class TaskService {
@@ -17,10 +18,27 @@ export class TaskService {
     private readonly userService: UserService,
   ) {}
 
-  async getTasks(userId: string): Promise<TaskListResponse> {
-    const tasks = await this.taskRepository.find({
+  async getTasks(
+    userId: string,
+    pagination: Pagination,
+    status?: string,
+    search?: string,
+  ): Promise<TaskListResponse> {
+    const findOptions: any = {
       where: { user_id: userId },
-    });
+      skip: (pagination.page - 1) * pagination.limit,
+      take: pagination.limit,
+    };
+
+    if (status) {
+      findOptions.where.status = status;
+    }
+
+    if (search) {
+      findOptions.where.title = ILike(`%${search}%`);
+    }
+
+    const tasks = await this.taskRepository.find(findOptions);
     return {
       items: tasks,
       total: tasks.length,

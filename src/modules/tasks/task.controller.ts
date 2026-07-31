@@ -6,6 +6,7 @@ import {
   Param,
   Patch,
   Post,
+  Query,
   Request,
 } from '@nestjs/common';
 import { TaskService } from './task.service';
@@ -37,9 +38,16 @@ export class TaskController {
     status: 401,
     description: 'Không có quyền truy cập',
   })
-  getTasks(@Request() req): Promise<TaskListResponse> {
+  getTasks(
+    @Request() req,
+    @Query('page') page: number,
+    @Query('limit') limit: number,
+    @Query('status') status?: string,
+    @Query('search') search?: string,
+  ): Promise<TaskListResponse> {
     const userId = req.userLogged.id;
-    return this.taskService.getTasks(userId);
+    const pagination = { page: page || 1, limit: limit || 10 };
+    return this.taskService.getTasks(userId, pagination, status, search);
   }
 
   @Get(':id')
