@@ -1,6 +1,6 @@
 export class Pagination {
-  currentPage: number = 1;
-  perPage: number = 10;
+  page: number;
+  limit: number;
 }
 
 export class PaginationResponse<T> {
