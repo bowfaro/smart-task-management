@@ -86,4 +86,16 @@ export class TaskService {
       message: MESSAGE.TASK_STATUS_UPDATED,
     };
   }
+
+  async deleteTask(taskId: string): Promise<MessageResponse> {
+    const task = await this.taskRepository.findOne({ where: { id: taskId } });
+    if (!task) {
+      throw new NotFoundException(MESSAGE.TASK_NOT_FOUND);
+    }
+    await this.taskRepository.remove(task);
+    return {
+      statusCode: 200,
+      message: MESSAGE.TASK_DELETED,
+    };
+  }
 }
