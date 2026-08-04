@@ -2,7 +2,6 @@ import { Controller } from '@nestjs/common';
 import { TokenService } from './token.service';
 import { CreateNewAcDto } from './dto/create-new-ac.dto';
 import { Body, Post } from '@nestjs/common';
-import { TokenResponse } from './types/token.type';
 
 @Controller()
 export class TokenController {
