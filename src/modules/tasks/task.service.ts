@@ -25,7 +25,7 @@ export class TaskService {
     search?: string,
   ): Promise<TaskListResponse> {
     const findOptions: any = {
-      where: { user_id: userId },
+      where: { userId },
       skip: (pagination.page - 1) * pagination.limit,
       take: pagination.limit,
     };
