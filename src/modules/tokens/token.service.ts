@@ -129,4 +129,50 @@ export class TokenService {
       throw new UnauthorizedException(MESSAGE.INVALID_OR_EXPIRED_TOKEN);
     }
   }
+
+  async refreshToken(token: string): Promise<{ accessToken: string }> {
+    try {
+      const decodeTokenData: any = this.jwtService.decode(token);
+      if (!decodeTokenData) {
+        throw new UnauthorizedException(MESSAGE.INVALID_OR_EXPIRED_TOKEN);
+      }
+      const { tokenId, phone } = decodeTokenData;
+      const tokenDb = await this.getOne(tokenId);
+
+      if (!tokenDb) {
+        throw new UnauthorizedException(MESSAGE.INVALID_OR_EXPIRED_TOKEN);
+      }
+
+      const { refreshToken, refreshPublicKey, userId } = tokenDb;
+
+      jwt.verify(refreshToken, refreshPublicKey, (err, decoded) => {
+        if (err) {
+          throw new UnauthorizedException(MESSAGE.INVALID_OR_EXPIRED_TOKEN);
+        }
+      });
+
+      const { publicKey: accessPublicKey, privateKey: accessPrivateKey }: any =
+        await generateKeyOfToken();
+
+      const payload = {
+        userId: userId,
+        phone: phone,
+      };
+
+      const payloadFormat = JSON.stringify({ ...payload, tokenId });
+
+      const accessToken = this.generateToken(
+        JSON.parse(payloadFormat),
+        accessPrivateKey,
+        this.expiredAccessToken,
+      );
+
+      tokenDb.accessPublicKey = accessPublicKey;
+      await this.save(tokenDb);
+
+      return { accessToken };
+    } catch (error) {
+      throw new UnauthorizedException(MESSAGE.INVALID_OR_EXPIRED_TOKEN);
+    }
+  }
 }
