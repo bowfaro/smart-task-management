@@ -1,11 +1,6 @@
-import {
-  Column,
-  CreateDateColumn,
-  DeleteDateColumn,
-  Entity,
-  PrimaryColumn,
-  UpdateDateColumn,
-} from 'typeorm';
+import { Column, Entity, OneToMany, PrimaryColumn } from 'typeorm';
+import { TaskEntity } from './task.entity';
+import { TagEntity } from './tag.entity';
 
 @Entity('user')
 export class UserEntity {
@@ -27,18 +22,43 @@ export class UserEntity {
   @Column({ type: 'varchar', length: 20 })
   phone: string;
 
-  @Column({ type: 'boolean', default: false })
+  @Column({ name: 'is_verified', type: 'boolean', default: false })
   isVerified: boolean;
 
-  @Column({ type: 'enum', enum: ['user', 'admin'], default: 'user' })
+  @Column({
+    name: 'role',
+    type: 'enum',
+    enum: ['user', 'admin'],
+    default: 'user',
+  })
   role: string;
 
-  @CreateDateColumn({ name: 'created_at' })
+  @Column({
+    name: 'created_at',
+    type: 'datetime',
+    default: () => 'CURRENT_TIMESTAMP',
+  })
   createdAt: Date;
-
-  @UpdateDateColumn({ name: 'updated_at' })
+  @Column({
+    name: 'updated_at',
+    type: 'datetime',
+    nullable: true,
+    default: () => 'NULL',
+    onUpdate: 'CURRENT_TIMESTAMP',
+  })
   updatedAt: Date;
 
-  @DeleteDateColumn({ name: 'deleted_at' })
+  @Column({
+    name: 'deleted_at',
+    nullable: true,
+    type: 'datetime',
+    default: () => 'NULL',
+  })
   deletedAt: Date;
+
+  @OneToMany(() => TaskEntity, (task) => task.user)
+  tasks: TaskEntity[];
+
+  @OneToMany(() => TagEntity, (tag) => tag.user)
+  tags: TagEntity[];
 }

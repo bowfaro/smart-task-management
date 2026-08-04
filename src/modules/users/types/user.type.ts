@@ -9,6 +9,8 @@ export class UserResponse {
   @Expose()
   isVerified: boolean;
   @Expose()
+  role: string;
+  @Expose()
   email: string;
   @Expose()
   createdAt: Date;

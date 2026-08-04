@@ -15,7 +15,7 @@ export class TagService {
   ) {}
 
   async getTags(userId: string): Promise<TagListResponse> {
-    const tags = await this.tagRepository.find({ where: { user_id: userId } });
+    const tags = await this.tagRepository.find({ where: { userId } });
     return {
       items: tags,
       total: tags.length,
