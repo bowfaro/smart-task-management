@@ -13,17 +13,23 @@ export class TaskResponse {
   @Expose()
   priority: number;
   @Expose()
-  start_at: Date;
+  startAt: Date;
   @Expose()
-  due_at: Date;
+  dueAt: Date;
   @Expose()
-  estimated_hours: number;
+  estimatedHours: number;
   @Expose()
-  smart_score: number;
+  smartScore: number;
   @Expose()
-  done_at: Date;
+  doneAt: Date;
   @Expose()
-  parent_id: string;
+  parentId: string;
+  @Expose()
+  userId: string;
+  @Expose()
+  createdAt: Date;
+  @Expose()
+  updatedAt: Date;
 }
 
 export class TaskListResponse extends PaginationResponse<TaskResponse> {}

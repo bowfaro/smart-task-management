@@ -7,11 +7,13 @@ export class TagResponse {
   @Expose()
   name: string;
   @Expose()
-  user_id: string;
+  userId: string;
   @Expose()
-  color_code: string;
+  colorCode: string;
   @Expose()
-  created_at: Date;
+  createdAt: Date;
+  @Expose()
+  updatedAt: Date;
 }
 
 export class TagListResponse extends PaginationResponse<TagResponse> {}

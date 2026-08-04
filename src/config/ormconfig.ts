@@ -13,5 +13,5 @@ export default new DataSource({
   database: process.env.DB_NAME,
   entities: [join(__dirname, '../database/entities/*.entity{.ts,.js}')],
   migrations: [join(__dirname, '../database/migrations/*{.ts,.js}')],
-  synchronize: false,
+  synchronize: true,
 });
