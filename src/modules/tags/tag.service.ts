@@ -21,8 +21,11 @@ export class TagService {
       total: tags.length,
     };
   }
-  async createTag(createTagDto: CreateTagDto): Promise<MessageResponse> {
-    const tag = this.tagRepository.create(createTagDto);
+  async createTag(
+    createTagDto: CreateTagDto,
+    userId: string,
+  ): Promise<MessageResponse> {
+    const tag = this.tagRepository.create({ ...createTagDto, userId });
     await this.tagRepository.save(tag);
     return {
       statusCode: 201,

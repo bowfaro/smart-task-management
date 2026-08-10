@@ -77,7 +77,7 @@ export class TaskEntity {
     name: 'updated_at',
     type: 'datetime',
     nullable: true,
-    default: () => 'NULL',
+    default: () => 'CURRENT_TIMESTAMP',
     onUpdate: 'CURRENT_TIMESTAMP',
   })
   updatedAt: Date;

@@ -7,5 +7,5 @@ export class CreateTagDto {
   name: string;
   @ApiProperty({ description: 'Mã màu tag', example: '#FF5733' })
   @IsNotEmpty()
-  color_code: string;
+  colorCode: string;
 }
