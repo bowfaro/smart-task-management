@@ -6,7 +6,9 @@ export class CreateTaskDto {
   @ApiProperty({ required: false })
   description?: string;
   @ApiProperty({ required: false })
-  start_at?: Date;
+  startAt?: Date;
   @ApiProperty({ required: false })
-  estimated_hours?: number;
+  estimatedHours?: number;
+  @ApiProperty({ required: false })
+  priority?: number;
 }

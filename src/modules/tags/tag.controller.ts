@@ -13,8 +13,12 @@ import { CreateTagDto } from './dto/create-tag.dto';
 import { MessageResponse } from 'src/common/types/response';
 import { ApiOperation } from 'node_modules/@nestjs/swagger/dist/decorators/api-operation.decorator';
 import { TagListResponse } from './types/tag.type';
-import { ApiResponse } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { JwtAuth } from 'src/common/decorators/jwt-auth.decorator';
 
+@JwtAuth()
+@ApiBearerAuth()
+@ApiTags('Tags')
 @Controller('tags')
 export class TagController {
   constructor(private readonly tagService: TagService) {}
@@ -47,8 +51,12 @@ export class TagController {
     status: 400,
     description: 'Dữ liệu không hợp lệ',
   })
-  createTag(@Body() createTagDto: CreateTagDto): Promise<MessageResponse> {
-    return this.tagService.createTag(createTagDto);
+  createTag(
+    @Body() createTagDto: CreateTagDto,
+    @Request() req,
+  ): Promise<MessageResponse> {
+    const userId = req.userLogged.id;
+    return this.tagService.createTag(createTagDto, userId);
   }
 
   @Patch(':id')

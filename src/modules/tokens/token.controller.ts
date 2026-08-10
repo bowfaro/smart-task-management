@@ -3,7 +3,7 @@ import { TokenService } from './token.service';
 import { CreateNewAcDto } from './dto/create-new-ac.dto';
 import { Body, Post } from '@nestjs/common';
 
-@Controller()
+@Controller('tokens')
 export class TokenController {
   constructor(private readonly tokenService: TokenService) {}
   @Post('access-token')

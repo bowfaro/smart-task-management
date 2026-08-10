@@ -19,7 +19,7 @@ export class TagEntity {
   name: string;
   @Column({ name: 'user_id', type: 'varchar', length: 36 })
   userId: string;
-  @Column({ name: 'color_code', type: 'varchar', length: 36, nullable: true })
+  @Column({ name: 'color_code', type: 'varchar', length: 36 })
   colorCode: string;
   @Column({
     name: 'created_at',
