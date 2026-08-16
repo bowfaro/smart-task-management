@@ -37,10 +37,10 @@ export class TaskEntity {
   @Max(5)
   priority: number;
 
-  @Column({ name: 'start_at', type: 'date', nullable: true })
+  @Column({ name: 'start_at', type: 'datetime', nullable: true })
   startAt: Date;
 
-  @Column({ name: 'due_at', type: 'date', nullable: true })
+  @Column({ name: 'due_at', type: 'datetime', nullable: true })
   dueAt: Date;
 
   @Column({

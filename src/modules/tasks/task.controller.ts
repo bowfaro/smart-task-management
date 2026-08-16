@@ -44,10 +44,22 @@ export class TaskController {
     @Query('limit') limit: number,
     @Query('status') status?: string,
     @Query('search') search?: string,
+    @Query('fromDate') fromDate?: string,
+    @Query('toDate') toDate?: string,
   ): Promise<TaskListResponse> {
     const userId = req.userLogged.id;
-    const pagination = { page: page || 1, limit: limit || 10 };
-    return this.taskService.getTasks(userId, pagination, status, search);
+    const pagination = {
+      page: Number(page) || 1,
+      limit: Number(limit) || 10,
+    };
+    return this.taskService.getTasks(
+      userId,
+      pagination,
+      status,
+      search,
+      fromDate,
+      toDate,
+    );
   }
 
   @Get(':id')
@@ -88,6 +100,27 @@ export class TaskController {
   ): Promise<MessageResponse> {
     const userId = req.userLogged.id;
     return this.taskService.createTask(createTaskDto, userId);
+  }
+
+  @Post(':id/tags')
+  @ApiOperation({ summary: 'Thêm tag vào task' })
+  @ApiResponse({
+    status: 200,
+    description: 'Tag được thêm vào task thành công',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Không tìm thấy task hoặc tag',
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Không có quyền truy cập',
+  })
+  addTagsToTask(
+    @Param('id') taskId: string,
+    @Body('tagIds') tagIds: string[],
+  ): Promise<MessageResponse> {
+    return this.taskService.addTagsToTask(taskId, tagIds);
   }
 
   @Patch(':id')

@@ -1,7 +1,17 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { TaskEntity } from 'src/database/entities/task.entity';
-import { ILike, Repository } from 'typeorm';
+import {
+  Between,
+  ILike,
+  LessThanOrEqual,
+  MoreThanOrEqual,
+  Repository,
+} from 'typeorm';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { MessageResponse } from 'src/common/types/response';
 import { UserService } from '../users/user.service';
@@ -23,25 +33,70 @@ export class TaskService {
     pagination: Pagination,
     status?: string,
     search?: string,
+    fromDate?: string,
+    toDate?: string,
   ): Promise<TaskListResponse> {
-    const findOptions: any = {
-      where: { userId },
-      skip: (pagination.page - 1) * pagination.limit,
-      take: pagination.limit,
-    };
+    const parsedFromDate = fromDate ? new Date(fromDate) : undefined;
+    const parsedToDate = toDate ? new Date(toDate) : undefined;
+
+    if (fromDate && Number.isNaN(parsedFromDate?.getTime())) {
+      throw new BadRequestException(
+        'fromDate is invalid. Use ISO date format.',
+      );
+    }
+
+    if (toDate && Number.isNaN(parsedToDate?.getTime())) {
+      throw new BadRequestException('toDate is invalid. Use ISO date format.');
+    }
+
+    if (parsedFromDate && parsedToDate && parsedFromDate > parsedToDate) {
+      throw new BadRequestException(
+        'fromDate must be less than or equal to toDate.',
+      );
+    }
+
+    const page = Number(pagination.page) || 1;
+    const limit = Number(pagination.limit) || 10;
+
+    const query = this.taskRepository
+      .createQueryBuilder('task')
+      .leftJoinAndSelect('task.tags', 'tags')
+      .where('task.userId = :userId', { userId })
+      .orderBy('task.createdAt', 'DESC');
 
     if (status) {
-      findOptions.where.status = status;
+      query.andWhere('task.status = :status', { status });
     }
 
     if (search) {
-      findOptions.where.title = ILike(`%${search}%`);
+      query.andWhere('task.title LIKE :search', {
+        search: `%${search.trim()}%`,
+      });
     }
 
-    const tasks = await this.taskRepository.find(findOptions);
+    if (parsedFromDate && parsedToDate) {
+      query.andWhere('task.startAt BETWEEN :fromDate AND :toDate', {
+        fromDate: parsedFromDate,
+        toDate: parsedToDate,
+      });
+    } else if (parsedFromDate) {
+      query.andWhere('task.startAt >= :fromDate', {
+        fromDate: parsedFromDate,
+      });
+    } else if (parsedToDate) {
+      query.andWhere('task.startAt <= :toDate', {
+        toDate: parsedToDate,
+      });
+    }
+
+    const [tasks, total] = await query
+      .skip((page - 1) * limit)
+      .take(limit)
+      .getManyAndCount();
+
     return {
       items: tasks,
-      total: tasks.length,
+      total,
     };
   }
 
@@ -61,12 +116,19 @@ export class TaskService {
     if (!user) {
       throw new NotFoundException(MESSAGE.USER_NOT_FOUND);
     }
+    const existingTask = await this.taskRepository.findOne({
+      where: { title: createTaskDto.title, userId },
+    });
+
+    if (existingTask) {
+      throw new NotFoundException(MESSAGE.TASK_EXISTS);
+    }
 
     const task = this.taskRepository.create({
       ...createTaskDto,
       userId,
     });
-    this.taskRepository.save(task);
+    await this.taskRepository.save(task);
     return {
       statusCode: 201,
       message: MESSAGE.TASK_CREATED,
@@ -115,5 +177,32 @@ export class TaskService {
       statusCode: 200,
       message: MESSAGE.TASK_DELETED,
     };
+  }
+
+  async addTagsToTask(
+    taskId: string,
+    tagIds: string[],
+  ): Promise<MessageResponse> {
+    const task = await this.taskRepository.findOne({
+      where: { id: taskId },
+      relations: { tags: true },
+    });
+
+    if (!task) {
+      throw new NotFoundException(MESSAGE.TASK_NOT_FOUND);
+    }
+
+    const existingTagIds = task.tags.map((tag) => tag.id);
+    const newTagIds = tagIds.filter((tagId) => !existingTagIds.includes(tagId));
+
+    if (newTagIds.length > 0) {
+      await this.taskRepository
+        .createQueryBuilder()
+        .relation('tags')
+        .of(taskId)
+        .add(newTagIds);
+    }
+
+    return { message: MESSAGE.TASK_TAGS_ADDED };
   }
 }
